@@ -1,0 +1,378 @@
+[
+  {
+    "name": "create_endpoint",
+    "description": "Create a new webhook catch endpoint (subject to plan limits).",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Endpoint name"
+        },
+        "description": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "name"
+      ],
+      "$schema": "https://json-schema.org/draft/2020-12/schema"
+    }
+  },
+  {
+    "name": "create_relay_rule",
+    "description": "Create a relay rule forwarding captured webhooks to a destination URL. The destination is validated by the CanHook SSRF guard before saving; private/internal IPs are rejected.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "endpoint": {
+          "type": "string",
+          "description": "Endpoint token or id"
+        },
+        "name": {
+          "type": "string"
+        },
+        "destination_url": {
+          "type": "string",
+          "format": "uri"
+        },
+        "transform_mode": {
+          "default": "passthrough",
+          "type": "string",
+          "enum": [
+            "passthrough",
+            "template",
+            "filter"
+          ]
+        },
+        "transform_config": {
+          "type": "object",
+          "propertyNames": {
+            "type": "string"
+          },
+          "additionalProperties": {}
+        },
+        "custom_headers": {
+          "type": "object",
+          "propertyNames": {
+            "type": "string"
+          },
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "retry_count": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 10
+        }
+      },
+      "required": [
+        "endpoint",
+        "name",
+        "destination_url"
+      ],
+      "$schema": "https://json-schema.org/draft/2020-12/schema"
+    }
+  },
+  {
+    "name": "delete_endpoint",
+    "description": "Permanently delete an endpoint and all its captured requests. Destructive — requires confirm=true.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "endpoint": {
+          "type": "string",
+          "description": "Endpoint token or id"
+        },
+        "confirm": {
+          "type": "boolean",
+          "description": "Must be true to actually delete"
+        }
+      },
+      "required": [
+        "endpoint",
+        "confirm"
+      ],
+      "$schema": "https://json-schema.org/draft/2020-12/schema"
+    },
+    "annotations": {
+      "destructiveHint": true
+    }
+  },
+  {
+    "name": "diagnose_endpoint",
+    "description": "Diagnose why relay deliveries are failing for an endpoint: success rate, failures grouped by plain-language cause, top failing destinations, and a primary diagnosis. Read-only aggregate.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "endpoint": {
+          "type": "string",
+          "description": "Endpoint token or id"
+        },
+        "window": {
+          "default": "24h",
+          "description": "Time window, e.g. 24h, 7d, 60m",
+          "type": "string"
+        }
+      },
+      "required": [
+        "endpoint"
+      ],
+      "$schema": "https://json-schema.org/draft/2020-12/schema"
+    },
+    "annotations": {
+      "readOnlyHint": true
+    }
+  },
+  {
+    "name": "get_delivery",
+    "description": "Get one delivery attempt's full detail, including error and response snippet.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "delivery_id": {
+          "type": "number",
+          "description": "Delivery id"
+        }
+      },
+      "required": [
+        "delivery_id"
+      ],
+      "$schema": "https://json-schema.org/draft/2020-12/schema"
+    },
+    "annotations": {
+      "readOnlyHint": true
+    }
+  },
+  {
+    "name": "get_endpoint",
+    "description": "Get one endpoint (by token or id) with its mock-response config and relay rule count.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "endpoint": {
+          "type": "string",
+          "description": "Endpoint token or numeric id"
+        }
+      },
+      "required": [
+        "endpoint"
+      ],
+      "$schema": "https://json-schema.org/draft/2020-12/schema"
+    },
+    "annotations": {
+      "readOnlyHint": true
+    }
+  },
+  {
+    "name": "get_request",
+    "description": "Get one captured request in full (headers, body, query, etc.). Body is capped at 100KB.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "request_id": {
+          "type": "number",
+          "description": "Captured request id"
+        }
+      },
+      "required": [
+        "request_id"
+      ],
+      "$schema": "https://json-schema.org/draft/2020-12/schema"
+    },
+    "annotations": {
+      "readOnlyHint": true
+    }
+  },
+  {
+    "name": "get_usage",
+    "description": "Get the user's plan, limits, and current usage (captures today, endpoints used, relay usage).",
+    "inputSchema": {
+      "type": "object",
+      "properties": {},
+      "$schema": "https://json-schema.org/draft/2020-12/schema"
+    },
+    "annotations": {
+      "readOnlyHint": true
+    }
+  },
+  {
+    "name": "list_deliveries",
+    "description": "List relay delivery attempts, optionally filtered by endpoint, rule, or status.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "endpoint": {
+          "description": "Endpoint token or id",
+          "type": "string"
+        },
+        "rule_id": {
+          "description": "Relay rule id",
+          "type": "number"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "pending",
+            "success",
+            "failed",
+            "retrying"
+          ]
+        },
+        "limit": {
+          "default": 25,
+          "type": "number",
+          "minimum": 1,
+          "maximum": 100
+        }
+      },
+      "$schema": "https://json-schema.org/draft/2020-12/schema"
+    },
+    "annotations": {
+      "readOnlyHint": true
+    }
+  },
+  {
+    "name": "list_endpoints",
+    "description": "List the user's webhook catch endpoints with request counts.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {},
+      "$schema": "https://json-schema.org/draft/2020-12/schema"
+    },
+    "annotations": {
+      "readOnlyHint": true
+    }
+  },
+  {
+    "name": "list_relay_rules",
+    "description": "List relay rules for an endpoint.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "endpoint": {
+          "type": "string",
+          "description": "Endpoint token or id"
+        }
+      },
+      "required": [
+        "endpoint"
+      ],
+      "$schema": "https://json-schema.org/draft/2020-12/schema"
+    },
+    "annotations": {
+      "readOnlyHint": true
+    }
+  },
+  {
+    "name": "list_requests",
+    "description": "List captured requests for an endpoint (newest first).",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "endpoint": {
+          "type": "string",
+          "description": "Endpoint token or id"
+        },
+        "method": {
+          "description": "Filter by HTTP method",
+          "type": "string"
+        },
+        "since": {
+          "description": "Only requests with id greater than this",
+          "type": "number"
+        },
+        "contains": {
+          "description": "Only requests whose body contains this substring",
+          "type": "string"
+        },
+        "limit": {
+          "default": 25,
+          "type": "number",
+          "minimum": 1,
+          "maximum": 100
+        }
+      },
+      "required": [
+        "endpoint"
+      ],
+      "$schema": "https://json-schema.org/draft/2020-12/schema"
+    },
+    "annotations": {
+      "readOnlyHint": true
+    }
+  },
+  {
+    "name": "replay_request",
+    "description": "Replay a captured request to a destination URL. The destination is validated by the CanHook SSRF guard; private/internal IPs are rejected. Returns the outbound response status, snippet, and duration.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "request_id": {
+          "type": "number"
+        },
+        "destination_url": {
+          "type": "string",
+          "format": "uri"
+        }
+      },
+      "required": [
+        "request_id",
+        "destination_url"
+      ],
+      "$schema": "https://json-schema.org/draft/2020-12/schema"
+    },
+    "annotations": {
+      "readOnlyHint": false
+    }
+  },
+  {
+    "name": "retry_delivery",
+    "description": "Re-queue a failed relay delivery so the worker attempts it again.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "delivery_id": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "delivery_id"
+      ],
+      "$schema": "https://json-schema.org/draft/2020-12/schema"
+    }
+  },
+  {
+    "name": "update_endpoint",
+    "description": "Update an endpoint: rename, toggle active, or set its mock response (paid plans).",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "endpoint": {
+          "type": "string",
+          "description": "Endpoint token or id"
+        },
+        "name": {
+          "type": "string"
+        },
+        "is_active": {
+          "type": "boolean"
+        },
+        "mock_status": {
+          "type": "number"
+        },
+        "mock_body": {
+          "type": "string"
+        },
+        "mock_content_type": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "endpoint"
+      ],
+      "$schema": "https://json-schema.org/draft/2020-12/schema"
+    }
+  }
+]

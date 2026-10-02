@@ -1,0 +1,38 @@
+{
+  "name": "canhook-mcp",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Remote MCP server for CanHook \u2014 inspect captured webhooks, diagnose relay delivery failures, replay requests, and manage endpoints over an OAuth 2.1 connection.",
+  "type": "module",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/index.js",
+    "stdio": "node dist/index.js --stdio",
+    "typecheck": "tsc -p tsconfig.check.json",
+    "test": "vitest run",
+    "check": "npm run typecheck && npm run test && npm run conformance",
+    "conformance": "bash scripts/conformance.sh"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/express": "2.0.1",
+    "@modelcontextprotocol/node": "2.1.0",
+    "@modelcontextprotocol/sdk": "^1.12.0",
+    "@modelcontextprotocol/server": "2.1.0",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.2",
+    "hono": "4.13.9",
+    "mysql2": "^3.11.0",
+    "zod": "4.6.5"
+  },
+  "devDependencies": {
+    "@modelcontextprotocol/client": "2.1.0",
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.14.0",
+    "tsx": "4.23.15",
+    "typescript": "^5.6.3",
+    "vitest": "3.2.7"
+  }
+}

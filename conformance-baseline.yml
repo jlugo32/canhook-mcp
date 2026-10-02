@@ -1,0 +1,90 @@
+# Expected conformance failures for @modelcontextprotocol/conformance@0.2.0-alpha.11
+# run with --requirements 2026-07-28 against scripts/conformance-server.ts.
+# RULE: this list may only shrink. A new failure is a regression; a passing entry must be removed.
+# Generated 2026-09-27 from a real run (98 passed, 70 failed). Each entry is <scenario>:<check-id>.
+
+server:
+  # Group 1 — NOT BUILT YET: resources/prompts arrive in Step 7 (ADR-0001). Remove as they pass.
+  - caching:sep-2549-prompts-list-caching-hints
+  - caching:sep-2549-resources-list-caching-hints
+  - caching:sep-2549-resources-templates-list-caching-hints
+  - input-required-result-non-tool-request:sep-2322-non-tool-incomplete
+  - prompts-get-embedded-resource:prompts-get-embedded-resource
+  - prompts-get-simple:prompts-get-simple
+  - prompts-get-with-args:prompts-get-with-args
+  - prompts-get-with-image:prompts-get-with-image
+  - prompts-list:prompts-list
+  - resources-list:resources-list
+  - resources-read-binary:resources-read-binary
+  - resources-read-text:resources-read-text
+  - resources-templates-read:resources-templates-read
+  # Group 2 — SUITE FIXTURE TOOLS: the scenario calls a sample tool (test_*, completion) that a
+  # product server does not ship. Planned: a separate fixture entry (docs/spike.md, gap 3).
+  - completion-complete:completion-complete
+  - input-required-result-basic-elicitation:sep-2322-elicitation-incomplete
+  - input-required-result-basic-list-roots:sep-2322-list-roots-incomplete
+  - input-required-result-basic-sampling:sep-2322-sampling-incomplete
+  - input-required-result-capability-check:sep-2322-respect-client-capabilities
+  - input-required-result-multi-round:sep-2322-multi-round-r1
+  - input-required-result-multiple-input-requests:sep-2322-multiple-inputs-incomplete
+  - input-required-result-request-state:sep-2322-request-state-incomplete
+  - input-required-result-result-type:sep-2322-result-type-included
+  - input-required-result-tampered-state:sep-2322-reject-tampered-state
+  - json-schema-2020-12:json-schema-2020-12-tool-found
+  - server-stateless:sep-2575-http-server-no-independent-requests-on-stream
+  - server-stateless:sep-2575-missing-capability-http-400
+  - server-stateless:sep-2575-server-no-log-without-loglevel
+  - server-stateless:sep-2575-server-rejects-undeclared-capability
+  - tools-call-audio:tools-call-audio
+  - tools-call-embedded-resource:tools-call-embedded-resource
+  - tools-call-error:tools-call-error
+  - tools-call-image:tools-call-image
+  - tools-call-mixed-content:tools-call-mixed-content
+  - tools-call-simple-text:tools-call-simple-text
+  - tools-call-with-progress:tools-call-with-progress
+  # Group 3 — NOT APPLICABLE: no tool uses x-mcp-header custom headers.
+  - http-custom-header-server-validation:sep-2243-server-decode-base64
+  - http-custom-header-server-validation:sep-2243-server-no-xmcp-tool
+  - http-custom-header-server-validation:sep-2243-server-reject-invalid-param-chars
+  - http-custom-header-server-validation:sep-2243-server-reject-param-mismatch
+  - http-custom-header-server-validation:sep-2243-server-validate-param-match
+  # Group 4 — TASKS EXTENSION (not scored for 2026-07-28): not in any released TS SDK.
+  # Upstream PR modelcontextprotocol/typescript-sdk#2782, blocker issue #2598 (ADR-0001 §4).
+  - tasks-capability-negotiation:sep-2663-server-rejects-undeclared-client
+  - tasks-capability-negotiation:sep-2663-tasks-methods-non-declaring
+  - tasks-capability-negotiation:tasks-extension-advertised
+  - tasks-capability-negotiation:tasks-per-request-meta-opt-in
+  - tasks-dispatch-and-envelope:sep-2663-durable-create-strong-consistency
+  - tasks-dispatch-and-envelope:sep-2663-legacy-task-param-ignored
+  - tasks-dispatch-and-envelope:sep-2663-tasks-get-invalid-task-id-32602
+  - tasks-dispatch-and-envelope:tasks-immediate-result-shortcut
+  - tasks-dispatch-and-envelope:tasks-result-type-complete-on-non-task-responses
+  - tasks-dispatch-and-envelope:tasks-server-directed-creation-no-hint
+  - tasks-lifecycle:sep-2663-cancel-ack-empty-result
+  - tasks-lifecycle:sep-2663-result-type-task-on-create
+  - tasks-lifecycle:sep-2663-tasks-get-status-completed
+  - tasks-lifecycle:sep-2663-tasks-get-status-failed
+  - tasks-lifecycle:sep-2663-tasks-get-status-working
+  - tasks-lifecycle:sep-2663-tool-error-uses-completed-status
+  - tasks-lifecycle:tasks-cancel-terminal-idempotent-ack
+  - tasks-lifecycle:tasks-sync-tool-call
+  - tasks-mrtr-composition:sep-2663-mrtr-synchronous-before-task-creation
+  - tasks-mrtr-input:sep-2663-tasks-get-status-input-required
+  - tasks-mrtr-input:tasks-mrtr-partial-fulfillment
+  - tasks-mrtr-input:tasks-mrtr-tasks-update-resumes
+  - tasks-request-headers:sep-2663-routing-headers-accepted-on-tasks-get
+  - tasks-request-headers:sep-2663-server-rejects-mismatched-mcp-name-on-tasks-get
+  - tasks-request-headers:tasks-headers-tolerate-mcp-method-on-tools-call
+  - tasks-request-state-removal:tasks-request-state-removal-setup
+  - tasks-required-task-error:sep-2663-server-returns-missing-capability-when-required
+  - tasks-wire-fields:tasks-no-early-ttl-expiry
+  - tasks-wire-fields:tasks-no-related-task-meta-on-inlined-result
+  - tasks-wire-fields:tasks-wire-field-renames
+  # Group 5 — SHOULD-level WARNINGS (counted as passes in the plain summary; strict in baseline mode):
+  # tools never change at runtime, so there is no list_changed to send; resources (-32602 + data.uri)
+  # and MRTR re-requests arrive in Step 7.
+  - server-stateless:sep-2575-server-sends-tools-list-changed-on-subscription
+  - sep-2164-resource-not-found:sep-2164-error-code
+  - sep-2164-resource-not-found:sep-2164-data-uri
+  - input-required-result-missing-input-response:sep-2322-missing-response-rerequests
+  - input-required-result-ignore-extra-params:sep-2322-ignore-unexpected-params  # calls a suite fixture tool
